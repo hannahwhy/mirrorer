@@ -22,12 +22,15 @@ You'll need a Ruby 1.9 implementation.  Ruby 1.9.3-p362 and Rubininus
 Establish fetch or push mirror remotes in each repository you want to act as a
 fetch or push mirror:
 
-  $ git remote add github --mirror=push git@github.com:foo/bar.git
-  $ git remote add gitorious --mirror=fetch git://gitorious.org/prj/repo.git
+  repo1$ git remote add github --mirror=push git@github.com:foo/bar.git
+  repo2$ git remote add gitorious --mirror=fetch git://gitorious.org/prj/repo.git
 
 Then run mirror.rb:
 
   ruby mirror.rb /var/repo_root github gitorious some_other_remote ...
+
+The contents of repo1 will be pushed to the github remote, and a fetch will be
+done against gitorious for repo2.
 
 4. License
 
