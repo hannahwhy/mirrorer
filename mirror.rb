@@ -68,7 +68,7 @@ end
 
 # ---
 
-mirror = Mirror.pool(:size => 6)
+mirror = Mirror.pool(:size => 4)
 root = ARGV[0]
 remotes = ARGV[1..-1]
 
