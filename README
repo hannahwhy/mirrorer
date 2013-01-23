@@ -32,6 +32,11 @@ Then run mirror.rb:
 The contents of repo1 will be pushed to the github remote, and a fetch will be
 done against gitorious for repo2.
 
+Please note that fetches and pushes are currently unordered, so you shouldn't
+yet use this program for e.g. integrating many repositories into one
+repository, and then mirroring that integration repository to many places.
+That'll be fixed soon.
+
 4. License
 
 This program is dedicated to the public domain.
