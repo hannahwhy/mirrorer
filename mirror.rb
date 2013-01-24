@@ -95,11 +95,11 @@ remotes.reject { |r| r == 'origin' }
 MAX_OUTBOUND = 6
 R = Runner.pool(:size => MAX_OUTBOUND)
 
-actions = Dir["#{root}/**/*.git"].each_with_object([]) do |path, fs|
+actions = Dir["#{root}/**/*.git"].each_with_object([]) do |path, as|
   repo = Repo.new(File.expand_path(path))
 
   remotes.each do |remote|
-    action = repo.mirror_action(remote)
+    as << repo.mirror_action(remote)
   end
 end
 
