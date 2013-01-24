@@ -66,10 +66,12 @@ class MirrorAction < Struct.new(:action, :remote, :path)
   ACTION_ORDER = [:fetch, :push]
 
   def <=>(other)
-    a = ACTION_ORDER.index(action)
-    b = ACTION_ORDER.index(other.action)
+    o1 = ACTION_ORDER.index(action)
+    o2 = ACTION_ORDER.index(other.action)
+    n1 = path
+    n2 = other.path
 
-    a <=> b
+    [o1, n1] <=> [o2, n2]
   end
 
   def execute
