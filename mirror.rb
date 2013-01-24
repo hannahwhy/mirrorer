@@ -50,14 +50,14 @@ class Repo < Struct.new(:path)
     return unless @remotes.has_key?(remote)
 
     if @remotes[remote] == :push
-      MirrorAction.new(:push, remote)
+      MirrorAction.new(:push, remote, path)
     elsif @remotes[remote] == :fetch
-      MirrorAction.new(:fetch, remote)
+      MirrorAction.new(:fetch, remote, path)
     end
   end
 end
 
-class MirrorAction < Struct.new(:action, :remote)
+class MirrorAction < Struct.new(:action, :remote, :path)
   include Shelling
 
   ACTION_ORDER = [:fetch, :push]
