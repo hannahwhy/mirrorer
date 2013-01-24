@@ -2,7 +2,20 @@
 
 require 'celluloid'
 
+module Shelling
+  def run(cmd, dry_run = false)
+    cmd = "cd #{path} && #{cmd}"
+    puts cmd
+
+    if !dry_run
+      `#{cmd}`
+    end
+  end
+end
+
 class Repo < Struct.new(:path)
+  include Shelling
+
   def initialize(*)
     super
     
@@ -33,42 +46,44 @@ class Repo < Struct.new(:path)
     end
   end
 
-  def mirror(remote)
-    if !@remotes.has_key?(remote)
-      puts "Nothing to do for remote #{remote} on repo #{path}"
-      return true
-    end
+  def mirror_action(remote)
+    return unless @remotes.has_key?(remote)
 
     if @remotes[remote] == :push
-      run "git push #{remote}"
+      MirrorAction.new(:push, remote)
     elsif @remotes[remote] == :fetch
-      run "git fetch #{remote}"
-    end
-
-    $?.success?
-  end
-
-  def run(cmd, dry_run = false)
-    cmd = "cd #{path} && #{cmd}"
-    puts cmd
-
-    if !dry_run
-      `#{cmd}`
+      MirrorAction.new(:fetch, remote)
     end
   end
 end
 
-class Mirror
+class MirrorAction < Struct.new(:action, :remote)
+  include Shelling
+
+  ACTION_ORDER = [:fetch, :push]
+
+  def <=>(other)
+    a = ACTION_ORDER.index(action)
+    b = ACTION_ORDER.index(other.action)
+
+    a <=> b
+  end
+
+  def execute
+    run("git #{action} #{remote}")
+  end
+end
+
+class Runner
   include Celluloid
 
-  def mirror_to_remote(repo, remote)
-    repo.mirror(remote)
+  def run(action)
+    action.execute
   end
 end
 
 # ---
 
-mirror = Mirror.pool(:size => 4)
 root = ARGV[0]
 remotes = ARGV[1..-1]
 
@@ -77,14 +92,18 @@ abort unless root
 # prevent ourselves from being stupid
 remotes.reject { |r| r == 'origin' }
 
-futures = Dir["#{root}/**/*.git"].each_with_object([]) do |path, fs|
+MAX_OUTBOUND = 6
+R = Runner.pool(:size => MAX_OUTBOUND)
+
+actions = Dir["#{root}/**/*.git"].each_with_object([]) do |path, fs|
   repo = Repo.new(File.expand_path(path))
 
   remotes.each do |remote|
-    fs << mirror.future(:mirror_to_remote, repo, remote)
+    action = repo.mirror_action(remote)
   end
 end
 
+futures = actions.sort.map { |a| R.future(:run, a) }
 ok = futures.all?(&:value)
 
 exit ok
