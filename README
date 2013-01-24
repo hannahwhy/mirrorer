@@ -29,8 +29,8 @@ Then run mirror.rb:
 
   ruby mirror.rb /var/repo_root github gitorious some_other_remote ...
 
-The contents of repo1 will be pushed to the github remote, and a fetch will be
-done against gitorious for repo2.  Fetches are run before pushes.
+A fetch will be done against gitorious for repo2, and then the contents of
+repo1 will be pushed to the github remote.  (Fetches are run before pushes.)
 
 4. License
 
