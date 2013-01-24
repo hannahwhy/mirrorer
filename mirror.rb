@@ -99,7 +99,12 @@ actions = Dir["#{root}/**/*.git"].each_with_object([]) do |path, as|
   repo = Repo.new(File.expand_path(path))
 
   remotes.each do |remote|
-    as << repo.mirror_action(remote)
+    action = repo.mirror_action(remote)
+    if !action
+      puts "Nothing to do for repo #{path}, remote #{remote}"
+    else
+      as << action
+    end
   end
 end
 
