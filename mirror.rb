@@ -1,11 +1,14 @@
 #!/usr/bin/env ruby
 
 require 'celluloid'
+require 'logger'
+
+LOG = Logger.new($stderr)
 
 module Shelling
   def run(cmd, dry_run = false)
     cmd = "cd #{path} && #{cmd}"
-    puts cmd
+    LOG.debug cmd
 
     if !dry_run
       `#{cmd}`
@@ -101,7 +104,7 @@ actions = Dir["#{root}/**/*.git"].each_with_object([]) do |path, as|
   remotes.each do |remote|
     action = repo.mirror_action(remote)
     if !action
-      puts "Nothing to do for repo #{path}, remote #{remote}"
+      LOG.info "Nothing to do for repo #{path}, remote #{remote}"
     else
       as << action
     end
