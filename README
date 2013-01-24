@@ -10,8 +10,8 @@ remotes.  I currently use it to
 
 2. Installation
 
-You'll need a Ruby 1.9 implementation.  Ruby 1.9.3-p362 and Rubininus
-2.0.0.rc1 are known to work.
+You'll need a Ruby 1.9 implementation.  Ruby 1.9.3-p362 and Rubinius 2.0.0.rc1
+are known to work.
 
   $ git clone
   $ cd (repo)
